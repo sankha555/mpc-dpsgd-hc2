@@ -434,7 +434,16 @@ class DPOptimizer(Optimizer):
                 generator=self.generator,
                 secure_mode=self.secure_mode,
             )
-            p.grad = (p.summed_grad + noise).view_as(p)
+            
+            noise2 = _generate_noise(
+                std=self.noise_multiplier * self.max_grad_norm,
+                reference=p.summed_grad,
+                generator=self.generator,
+                secure_mode=self.secure_mode,
+            )
+            
+            # p.grad = (p.summed_grad + noise).view_as(p)
+            p.grad = p.summed_grad
 
             _mark_as_processed(p.summed_grad)
 
@@ -503,8 +512,42 @@ class DPOptimizer(Optimizer):
             self._is_last_step_skipped = True
             return False
 
+        if 0:
+            for p in self.params:
+                d_p = p
+                if len(d_p.shape) > 1:
+                    alpha_d_p = (d_p[0]).flatten().tolist()
+                    print("THETA_W = "+str(alpha_d_p[:1000]))
+                
+                else:
+                    alpha_d_p = (d_p).flatten().tolist()
+                    print("THETA_B = "+str(alpha_d_p[:1000]))
+        
+        if 0:
+            for p in self.params:
+                d_p = p.summed_grad
+                if len(d_p.shape) > 1:
+                    alpha_d_p = (d_p[0]).flatten().tolist()
+                    print("NABLA_W = "+str(alpha_d_p[:1000]))
+                
+                else:
+                    alpha_d_p = (d_p).flatten().tolist()
+                    print("NABLA_B = "+str(alpha_d_p[:1000]))
+
+
         self.add_noise()
         self.scale_grad()
+
+        if 0:
+            for p in self.params:
+                d_p = p.grad
+                if len(d_p.shape) > 1:
+                    alpha_d_p = (d_p[0]).mul(-0.1).flatten().tolist()
+                    print("NABLA_W_SCALED = "+str(alpha_d_p[:1000]))
+                
+                else:
+                    alpha_d_p = (d_p).mul(-0.1).flatten().tolist()
+                    print("NABLA_B_SCALED = "+str(alpha_d_p[:1000]))
 
         if self.step_hook:
             self.step_hook(self)

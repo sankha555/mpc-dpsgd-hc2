@@ -103,23 +103,60 @@ def cleanup():
 
 
 def convnet(num_classes):
-    return nn.Sequential(
-        nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1),
-        nn.ReLU(),
-        nn.AvgPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
-        nn.ReLU(),
-        nn.AvgPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
-        nn.ReLU(),
-        nn.AvgPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
-        nn.ReLU(),
-        nn.AdaptiveAvgPool2d((1, 1)),
-        nn.Flatten(start_dim=1, end_dim=-1),
-        nn.Linear(128, num_classes, bias=True),
-    )
+    # return nn.Sequential(
+    #     nn.Conv2d(3, 32, kernel_size=3, stride=1, padding=1),
+    #     nn.ReLU(),
+    #     nn.AvgPool2d(kernel_size=2, stride=2),
+    #     nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+    #     nn.ReLU(),
+    #     nn.AvgPool2d(kernel_size=2, stride=2),
+    #     nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1),
+    #     nn.ReLU(),
+    #     nn.AvgPool2d(kernel_size=2, stride=2),
+    #     nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+    #     nn.ReLU(),
+    #     # nn.AdaptiveAvgPool2d((1, 1)),
+    #     nn.AvgPool2d(kernel_size=4, stride=2),
 
+    #     nn.Flatten(start_dim=1, end_dim=-1),
+    #     nn.Linear(128, num_classes, bias=True),
+    # )
+
+    # ABADI 
+    # return nn.Sequential(
+    #     nn.Conv2d(3, 64, kernel_size=5, stride=1, padding=1), # 24-5+2 = 21+1 = 22
+    #     nn.ReLU(),
+    #     nn.MaxPool2d(kernel_size=2, stride=2), #22 - 2 + 2/2 + 1 = 12
+        
+    #     nn.Conv2d(64, 64, kernel_size=5, stride=1, padding=1), # 12 - 5 + 2 = 9 + 1 = 10
+    #     nn.ReLU(),
+    #     nn.MaxPool2d(kernel_size=2, stride=2), # 10 - 2 + 2/2 = 5 + 1 = 6
+        
+    #     nn.Flatten(start_dim=1, end_dim=-1),
+        
+    #     nn.Linear(2304, 384, bias=True),
+    #     nn.ReLU(),
+    #     nn.Linear(384, 384, bias=True),
+    #     nn.ReLU(),
+    #     nn.Linear(384, num_classes, bias=True),
+    # )
+
+    return nn.Sequential(
+        nn.Flatten(),
+        nn.Linear(3*32*32, 2048),
+        nn.ReLU(),
+
+        nn.Linear(2048, 1024),
+        nn.ReLU(),
+
+        nn.Linear(1024, 512),
+        nn.ReLU(),
+
+        nn.Linear(512, 256),
+        nn.ReLU(),
+
+        nn.Linear(256, 10),
+    )
 
 def save_checkpoint(state, is_best, filename="checkpoint.tar"):
     torch.save(state, filename)

@@ -1,0 +1,8 @@
+- plot graphs for all mno-privacy case for larger number of epochs and check where the accuracy starts dropping
+- limit epsilon to smalkler values and get the results
+- perhaps this network is not correct network in no-privacy case either
+
+1. If the accuracy doesnt oncrease by a lot (say 0.5 % ) after some epochs, stop training there. Don't go over 10 in any case, because not much increase in the accuracy after this for such networks.
+2. Get the largest possible batch size which trains well in the non-privacy case and check the accuracy for the same batch size in prvacy case. Identify such a network.
+3. Limit epsilon value to 4.
+4. Once such a network is identified, add the minimum possible noise level and show the deviation in accuracy from vanilla.
